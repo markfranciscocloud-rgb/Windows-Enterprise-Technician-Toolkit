@@ -6,19 +6,25 @@ BeforeAll {
 
 Describe 'WETT repository foundation' {
     It 'contains the main launcher' {
-        Test-Path (Join-Path (Split-Path -Parent $PSScriptRoot) 'WETT.ps1') | Should -BeTrue
+        $root = Split-Path -Parent $PSScriptRoot
+        Test-Path (Join-Path $root 'WETT.ps1') | Should -BeTrue
     }
 
     It 'contains required module files' {
         $root = Split-Path -Parent $PSScriptRoot
-        @(
-            'WETT.Core.psm1',
-            'WETT.System.psm1',
-            'WETT.Network.psm1',
-            'WETT.Security.psm1',
+
+        $requiredModules = @(
+            'WETT.Core.psm1'
+            'WETT.System.psm1'
+            'WETT.Network.psm1'
+            'WETT.Security.psm1'
+            'WETT.EventLog.psm1'
             'WETT.Reporting.psm1'
-        ) | ForEach-Object {
-            Test-Path (Join-Path $root "Modules/$_") | Should -BeTrue
+        )
+
+        foreach ($moduleName in $requiredModules) {
+            Test-Path (Join-Path $root "Modules/$moduleName") |
+                Should -BeTrue
         }
     }
 
