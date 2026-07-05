@@ -16,9 +16,11 @@ Describe 'WETT Event Log module' {
         $commands | Should -Contain 'Get-WETTEventDescription'
         $commands | Should -Contain 'Get-WETTLogonEvent'
         $commands | Should -Contain 'Show-WETTLogonSummary'
+        $commands | Should -Contain 'Get-WETTPowerShellEvent'
+        $commands | Should -Contain 'Show-WETTPowerShellSummary'
     }
 
-    It 'maps supported event IDs to descriptions' {
+    It 'maps supported logon event IDs to descriptions' {
         Get-WETTEventDescription -EventId 4624 |
             Should -Be 'Successful logon'
 
@@ -29,19 +31,25 @@ Describe 'WETT Event Log module' {
             Should -Be 'Account lockout'
     }
 
-    It 'rejects unsupported event IDs' {
+    It 'rejects unsupported logon event IDs' {
         {
             Get-WETTEventDescription -EventId 9999
         } | Should -Throw
     }
 
-    It 'validates the requested time window' {
+    It 'validates the logon event time window' {
         {
             Get-WETTLogonEvent -Hours 0
         } | Should -Throw
     }
 
-    It 'returns an empty result when no matching events exist' {
+    It 'validates the PowerShell event time window' {
+        {
+            Get-WETTPowerShellEvent -Hours 0
+        } | Should -Throw
+    }
+
+    It 'returns an empty logon result when no events exist' {
         InModuleScope WETT.EventLog {
             Mock Get-WinEvent {
                 throw [System.Exception]::new(
@@ -58,12 +66,61 @@ Describe 'WETT Event Log module' {
         }
     }
 
-    It 'is connected to the main launcher' {
+    It 'returns an empty PowerShell result when no events exist' {
+        InModuleScope WETT.EventLog {
+            Mock Get-WinEvent {
+                param(
+                    $ListLog,
+                    $FilterHashtable,
+                    $MaxEvents,
+                    $ErrorAction
+                )
+                $null = $FilterHashtable
+                $null = $MaxEvents
+                $null = $ErrorAction
+
+                if ($null -ne $ListLog) {
+                    return [pscustomobject]@{
+                        LogName  = $ListLog
+                        IsEnabled = $true
+                    }
+                }
+
+                throw [System.Exception]::new(
+                    'No events were found that match the specified selection criteria.'
+                )
+            }
+
+            $events = @(
+                Get-WETTPowerShellEvent -Hours 24 -MaxEvents 10
+            )
+
+            $events.Count | Should -Be 0
+
+            Should -Invoke Get-WinEvent -Times 2 -ParameterFilter {
+                $null -ne $ListLog
+            }
+
+            Should -Invoke Get-WinEvent -Times 2 -ParameterFilter {
+                $null -ne $FilterHashtable
+            }
+        }
+    }
+
+    It 'connects logon triage to the launcher' {
         $launcherPath = Join-Path $root 'WETT.ps1'
         $launcher = Get-Content $launcherPath -Raw
 
-        $launcher | Should -Match 'WETT\.EventLog\.psm1'
         $launcher | Should -Match 'Windows logon event triage'
         $launcher | Should -Match 'Show-WETTLogonSummary'
+    }
+
+    It 'connects PowerShell triage to the launcher' {
+        $launcherPath = Join-Path $root 'WETT.ps1'
+        $launcher = Get-Content $launcherPath -Raw
+
+        $launcher | Should -Match 'PowerShell event triage'
+        $launcher | Should -Match 'Show-WETTPowerShellSummary'
+        $launcher | Should -Match 'Enter 0-11'
     }
 }
