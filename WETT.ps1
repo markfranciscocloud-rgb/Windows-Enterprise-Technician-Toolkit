@@ -53,6 +53,7 @@ function Show-MainMenu {
     Write-Host '  8. Learning mode'
     Write-Host '  9. Show toolkit status'
     Write-Host ' 10. Windows logon event triage'
+    Write-Host ' 11. PowerShell event triage'
     Write-Host '  0. Exit'
     Write-Host ''
 }
@@ -129,12 +130,18 @@ while ($running) {
     }
     Read-WETTContinue
 }
+'11' {
+    Invoke-WETTSafeAction -Name 'PowerShell event triage' -Action {
+        Show-WETTPowerShellSummary -Hours 24 -MaxEvents 500
+    }
+    Read-WETTContinue
+}
         '0' {
             Write-WETTLog -Message 'Toolkit closed normally.'
             $running = $false
         }
         default {
-            Write-Host 'Invalid choice. Enter 0-10.' -ForegroundColor Yellow
+            Write-Host 'Invalid choice. Enter 0-11.' -ForegroundColor Yellow
             Start-Sleep -Seconds 1
         }
     }
