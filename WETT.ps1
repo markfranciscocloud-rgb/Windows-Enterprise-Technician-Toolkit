@@ -24,6 +24,7 @@ $moduleFiles = @(
     'WETT.System.psm1',
     'WETT.Network.psm1',
     'WETT.Security.psm1',
+    'WETT.EventLog.psm1',
     'WETT.Reporting.psm1'
 )
 
@@ -51,6 +52,7 @@ function Show-MainMenu {
     Write-Host '  7. Generate full triage report'
     Write-Host '  8. Learning mode'
     Write-Host '  9. Show toolkit status'
+    Write-Host ' 10. Windows logon event triage'
     Write-Host '  0. Exit'
     Write-Host ''
 }
@@ -121,12 +123,18 @@ while ($running) {
             $context | Format-List
             Read-WETTContinue
         }
+        '10' {
+    Invoke-WETTSafeAction -Name 'Windows logon event triage' -Action {
+        Show-WETTLogonSummary -Hours 24 -MaxEvents 500
+    }
+    Read-WETTContinue
+}
         '0' {
             Write-WETTLog -Message 'Toolkit closed normally.'
             $running = $false
         }
         default {
-            Write-Host 'Invalid choice. Enter 0-9.' -ForegroundColor Yellow
+            Write-Host 'Invalid choice. Enter 0-10.' -ForegroundColor Yellow
             Start-Sleep -Seconds 1
         }
     }
