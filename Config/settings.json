@@ -1,0 +1,16 @@
+{
+  "projectName": "Windows Enterprise Technician Toolkit",
+  "shortName": "WETT",
+  "version": "0.1.0",
+  "safeMode": true,
+  "defaultConnectivityTargets": [
+    "1.1.1.1",
+    "8.8.8.8",
+    "www.microsoft.com"
+  ],
+  "maxConnectionsInReport": 100,
+  "reportFormats": [
+    "HTML",
+    "JSON"
+  ]
+}

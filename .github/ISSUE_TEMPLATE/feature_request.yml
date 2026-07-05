@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a safe diagnostic, reporting, or learning feature
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Enterprise or lab use case
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: state-change
+    attributes:
+      label: Does this change system state?
+      options:
+        - No, read-only
+        - Yes, repair or configuration change
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks, permissions, and rollback considerations

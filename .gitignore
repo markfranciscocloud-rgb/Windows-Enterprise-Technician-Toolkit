@@ -1,0 +1,25 @@
+# Generated operational data
+Logs/*
+!Logs/.gitkeep
+Reports/*
+!Reports/.gitkeep
+
+# PowerShell and test artifacts
+*.clixml
+*.tmp
+TestResults/
+PesterResults.xml
+
+# Editors and OS
+.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Potential secrets
+.env
+*.key
+*.pfx
+*.p12
+secrets.json
