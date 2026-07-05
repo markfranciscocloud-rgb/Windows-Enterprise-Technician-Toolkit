@@ -91,7 +91,7 @@ while ($running) {
         }
         '5' {
             Invoke-WETTSafeAction -Name 'Active TCP connections' -Action {
-                Show-WETTActiveConnections
+                Show-WETTActiveConnection
             }
             Read-WETTContinue
         }
@@ -103,7 +103,7 @@ while ($running) {
         }
         '7' {
             Invoke-WETTSafeAction -Name 'Full triage report' -Action {
-                $report = New-WETTFullReport -RootPath $PSScriptRoot
+                $report = Export-WETTFullReport -RootPath $PSScriptRoot
                 Write-Host ''
                 Write-Host "Report created: $($report.ReportDirectory)" -ForegroundColor Green
                 Write-Host "HTML: $($report.HtmlPath)"
@@ -131,3 +131,4 @@ while ($running) {
         }
     }
 }
+

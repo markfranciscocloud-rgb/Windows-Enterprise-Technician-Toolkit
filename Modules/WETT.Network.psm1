@@ -1,6 +1,6 @@
 Set-StrictMode -Version Latest
 
-function Get-WETTActiveConnections {
+function Get-WETTActiveConnection {
     [CmdletBinding()]
     param(
         [ValidateRange(1, 1000)]
@@ -53,7 +53,7 @@ function Get-WETTNetworkSnapshot {
         Adapters        = @($adapters)
         IPConfiguration = @($ipConfiguration)
         DefaultRoutes   = @($defaultRoutes)
-        Connections     = @(Get-WETTActiveConnections -Limit 100)
+        Connections     = @(Get-WETTActiveConnection -Limit 100)
     }
 }
 
@@ -105,21 +105,22 @@ function Resolve-WETTDomain {
     }
 }
 
-function Show-WETTActiveConnections {
+function Show-WETTActiveConnection {
     [CmdletBinding()]
     param()
 
     Show-WETTHeader -Subtitle 'Active TCP Connections'
-    Get-WETTActiveConnections -Limit 200 | Format-Table -AutoSize
+    Get-WETTActiveConnection -Limit 200 | Format-Table -AutoSize
     Write-Host ''
     Write-Host 'Interpretation: investigate unknown processes or destinations, but do not treat one connection as proof of compromise.' -ForegroundColor Yellow
 }
 
 Export-ModuleMember -Function @(
-    'Get-WETTActiveConnections',
+    'Get-WETTActiveConnection',
     'Get-WETTNetworkSnapshot',
     'Show-WETTNetworkSnapshot',
     'Test-WETTConnectivity',
     'Resolve-WETTDomain',
-    'Show-WETTActiveConnections'
+    'Show-WETTActiveConnection'
 )
+

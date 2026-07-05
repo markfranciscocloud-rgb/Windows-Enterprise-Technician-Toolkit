@@ -27,9 +27,18 @@ jobs:
       - name: Run PSScriptAnalyzer
         shell: pwsh
         run: |
-          $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning
-          $results | Format-Table -AutoSize
-          if ($results) { throw 'PSScriptAnalyzer found errors or warnings.' }
+          $results = Invoke-ScriptAnalyzer `
+            -Path . `
+            -Recurse `
+            -Settings ./PSScriptAnalyzerSettings.psd1
+
+          $results |
+            Select-Object Severity, RuleName, ScriptName, Line, Message |
+            Format-Table -Wrap -AutoSize
+
+          if ($results) {
+            throw 'PSScriptAnalyzer found errors or warnings.'
+          }
 
       - name: Run Pester
         shell: pwsh
@@ -39,3 +48,4 @@ jobs:
           $configuration.Run.Exit = $true
           $configuration.Output.Verbosity = 'Detailed'
           Invoke-Pester -Configuration $configuration
+

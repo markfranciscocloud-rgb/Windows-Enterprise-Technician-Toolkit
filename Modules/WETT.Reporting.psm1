@@ -1,6 +1,6 @@
 Set-StrictMode -Version Latest
 
-function New-WETTFullReport {
+function Export-WETTFullReport {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -94,4 +94,5 @@ th { background: #eef2f7; }
     }
 }
 
-Export-ModuleMember -Function 'New-WETTFullReport'
+Export-ModuleMember -Function 'Export-WETTFullReport'
+
