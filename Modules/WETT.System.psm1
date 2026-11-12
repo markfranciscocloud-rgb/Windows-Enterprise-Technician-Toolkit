@@ -68,4 +68,50 @@ function Show-WETTSystemSnapshot {
         Format-Table -AutoSize
 }
 
-Export-ModuleMember -Function @('Get-WETTSystemSnapshot', 'Show-WETTSystemSnapshot')
+
+function Get-WETTDiskHealth {
+    [CmdletBinding()]
+    param(
+        [object[]]$Disks = (Get-WETTSystemSnapshot).Disks,
+
+        [ValidateRange(0,100)]
+        [double]$ThresholdPercent = 20
+    )
+
+    foreach ($disk in $Disks) {
+        $free = $null
+
+        if ($null -ne $disk.FreePercent) {
+            try {
+                $free = [double]$disk.FreePercent
+            }
+            catch {
+                $free = $null
+            }
+        }
+
+        $status = if ($null -eq $free -or
+                      $free -lt 0 -or
+                      $free -gt 100) {
+            'UNKNOWN'
+        }
+        elseif ($free -lt $ThresholdPercent) {
+            'WARNING'
+        }
+        else {
+            'HEALTHY'
+        }
+
+        [pscustomobject]@{
+            Drive       = $disk.Drive
+            FreePercent = $free
+            Status      = $status
+        }
+    }
+}
+
+Export-ModuleMember -Function @(
+    'Get-WETTSystemSnapshot',
+    'Show-WETTSystemSnapshot',
+    'Get-WETTDiskHealth'
+)
